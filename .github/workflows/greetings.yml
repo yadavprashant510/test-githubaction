@@ -1,0 +1,30 @@
+name: Checkout on EC2
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Install SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H <EC2_PUBLIC_IP> >> ~/.ssh/known_hosts
+          
+      - name: SSH into EC2 instance
+        uses: appleboy/ssh-action@master
+        with:
+          host: <EC2_PUBLIC_IP>
+          username: <EC2_USERNAME>
+          key: ~/.ssh/id_rsa
+          script: |
+            git clone git@github.com/<YOUR_USERNAME>/<YOUR_REPO>.git
