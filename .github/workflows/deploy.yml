@@ -1,4 +1,4 @@
-name: Checkout on EC2
+name: Connect to GCE Instance
 
 on:
   push:
@@ -6,25 +6,23 @@ on:
       - main
 
 jobs:
-  deploy:
+  connect-to-gce:
     runs-on: ubuntu-latest
-
+    
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Install SSH key
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H 127.0.0.1 >> ~/.ssh/known_hosts
-          
-      - name: SSH into EC2 instance
+      - name: Install SSH client
+        run: sudo apt-get update && sudo apt-get install -y openssh-client
+
+      - name: SSH into GCE instance
         uses: appleboy/ssh-action@master
         with:
-          host: 127.0.0.1
-          username: vagrant
-          key: ~/.ssh/id_rsa
+          host: 34.73.29.135  # Replace with your GCE instance IP address
+          username: rockysinghearthday  # Replace with your GCE instance username
+          key: ${{ secrets.GCE_SSH_PRIVATE_KEY }}
           script: |
-            git clone git@github.com:yadavprashant510/test-githubaction.git
+            # Now you are connected to the GCE instance via SSH.
+            # You can execute commands or run scripts here.
+            ls -al  # Example command to list files in the home directory
