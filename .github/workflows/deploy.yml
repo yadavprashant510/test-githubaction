@@ -23,8 +23,9 @@ jobs:
       - name: SSH into EC2 instance
         uses: appleboy/ssh-action@master
         with:
-          host: 127.0.0.1
+          host: <YOUR_HOST_IP_OR_HOSTNAME>
           username: vagrant
-          key: ~/.ssh/id_rsa
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             git clone git@github.com:yadavprashant510/test-githubaction.git
+
